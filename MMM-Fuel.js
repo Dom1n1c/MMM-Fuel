@@ -84,8 +84,8 @@ Module.register('MMM-Fuel', {
         showOpenOnly: false,
         iconHeader: true,
         rotate: true,
-        types: ['diesel'],
-        sortBy: 'diesel',
+        types: ['e10'],
+        sortBy: 'e10',
         rotateInterval: 60 * 1000, // every minute
         updateInterval: 15 * 60 * 1000, // every 15 minutes
         provider: 'tankerkoenig',
@@ -402,6 +402,37 @@ Module.register('MMM-Fuel', {
     appendDataRow(data, appendTo) {
         const row = document.createElement('tr');
 
+		if(data.name=="Hilden, Herder Str. 44"){
+			data.name="FT Wysocki";
+		}
+		if(data.name.startsWith('JET')){
+			data.name="Jet";
+		}
+		if(data.name.startsWith('TOTAL')){
+			data.name="Total";
+		}
+		if(data.name.startsWith('star')){
+			data.name="Star";
+		}
+		if(data.name.startsWith('Aral')){
+			data.name="Aral";
+		}
+		if(data.name.startsWith('Esso')){
+			data.name="Esso";
+		}
+		if(data.name=="HILDEN, HOCHDAHLER STR"){
+			data.name="Shell";
+		}
+		if(data.name=="HILDEN, WALDER STR."){
+			data.name="Shell";
+		}
+		if(data.name=="ERKRATH, MAX-PLANCK-STR. 81"){
+			data.name="Shell";
+		}
+		if(data.name=="HAAN, GINSTERWEG"){
+			data.name="Shell";
+		}		
+		
         const name = document.createElement('td');
         name.innerHTML = this.shortenText(data.name);
         row.appendChild(name);
