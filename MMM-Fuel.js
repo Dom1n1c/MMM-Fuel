@@ -58,8 +58,9 @@ Module.register('MMM-Fuel', {
      * @property {int} height - Height of the map.
      * @property {boolean} colored - Flag to render map in colour or greyscale.
      * @property {boolean} open - Flag to render column to indicate if the gas stations are open or closed.
-     * @property {boolean|int} shortenText - Max characters to be shown for name and address.
-     * @property {boolean} showAddress - Flag to show the gas stations address.
+     * @property {boolean|int} shortenName - Max characters to be shown for station name.
+     * @property {boolean|int} shortenAddress - Max characters to be shown for address.
+	 * @property {boolean} showAddress - Flag to show the gas stations address.
      * @property {boolean} showOpenOnly - Flag to show only open gas stations or all.
      * @property {boolean} iconHeader - Flag to display the car icon in the header.
      * @property {boolean} rotate - Flag to enable/disable rotation between sort by price and distance.
@@ -79,7 +80,6 @@ Module.register('MMM-Fuel', {
         height: 600,
         colored: false,
         open: false,
-        shortenText: false,
         showAddress: true,
         showOpenOnly: false,
         iconHeader: true,
@@ -89,7 +89,18 @@ Module.register('MMM-Fuel', {
         rotateInterval: 60 * 1000, // every minute
         updateInterval: 15 * 60 * 1000, // every 15 minutes
         provider: 'tankerkoenig',
-        toFixed: false
+        toFixed: false,
+		showDistance : true,
+		shortenName: false,
+		shortenAddress: false,
+		replaceName:
+		{
+			enable:false
+		},
+		replaceAddress:
+		{
+			enable:false
+		}
     },
 
     /**
@@ -334,11 +345,16 @@ Module.register('MMM-Fuel', {
         const distanceIconLabel = document.createElement('th');
         distanceIconLabel.classList.add('centered');
 
-        const distanceIcon = document.createElement('i');
-        distanceIcon.classList.add('fa', 'fa-map-o');
-        distanceIconLabel.appendChild(distanceIcon);
-
-        if (!this.sortByPrice) {
+		
+		if(this.config.showDistance)
+		{
+			const distanceIcon = document.createElement('i');
+			distanceIcon.classList.add('fa', 'fa-map-o');
+			distanceIconLabel.appendChild(distanceIcon);
+		}
+		
+        if (!this.sortByPrice)
+		{
             distanceIconLabel.appendChild(this.createSortIcon());
         }
 
@@ -357,21 +373,85 @@ Module.register('MMM-Fuel', {
     },
 
     /**
-     * @function shortenText
-     * @description Shortens text based on config option (shortenText) and adds ellipsis at the end.
+     * @function shortenName
+     * @description Shortens text based on config option (shortenName) and adds ellipsis at the end.
      *
      * @param {string} text - Text which should be shorten.
      *
      * @returns {string} The shortened text.
      */
-    shortenText(text) {
+    shortenName(text) {
         let temp = text;
-        if (this.config.shortenText && temp.length > this.config.shortenText) {
-            temp = `${temp.slice(0, this.config.shortenText)}&#8230;`;
+        if (this.config.shortenName && temp.length > this.config.shortenName) {
+            temp = `${temp.slice(0, this.config.shortenName)}&#8230;`;
         }
         return temp;
     },
 
+    /**
+     * @function shortenAddress
+     * @description Shortens text based on config option (shortenAddress) and adds ellipsis at the end.
+     *
+     * @param {string} text - Text which should be shorten.
+     *
+     * @returns {string} The shortened text.
+     */
+    shortenAddress(text) {
+        let temp = text;
+        if (this.config.shortenAddress && temp.length > this.config.shortenAddress) {
+            temp = `${temp.slice(0, this.config.shortenAddress)}&#8230;`;
+        }
+        return temp;
+    },
+
+    /**
+     * @function replaceName
+     * @description Replace station name based on config option (replaceName).
+     *
+     * @param {string} text - Text which should searched for.
+     *
+     * @returns {string} The new station name.
+     */
+    replaceName(text)
+	{
+        let temp = text;
+        if (this.config.replaceName.enable)
+		{
+			//for (let i = 0; i < this.config.replaceName.values.length; i += 1)
+			for (let [key, value] of Object.entries(this.config.replaceName.beginsWith))
+			{
+				if (temp.startsWith(key))
+				{
+					temp = value;
+				}
+			}
+        }
+        return temp;
+    },
+
+    /**
+     * @function replaceAddress
+     * @description Replace text based on config option (replaceAddress).
+     *
+     * @param {string} text - Text which should be replaced.
+     *
+     * @returns {string} The replaced text.
+     */
+    replaceAddress(text)
+	{
+        let temp = text;
+        if (this.config.replaceAddress.enable)
+		{
+			//for (let i = 0; i < this.config.replaceAddress.values.length; i += 1)
+			for (let [key, value] of Object.entries(this.config.replaceAddress.values))
+			{
+				//temp = temp.replaceAll(this.config.replaceAddress.values[i].contains, this.config.replaceAddress.values[i].replace);
+				temp = temp.replace(key,value);
+			}
+        }
+        return temp;
+    },
+	
     /**
      * @function appendDataRow
      * @description Creates the UI for the station price table.
@@ -401,40 +481,9 @@ Module.register('MMM-Fuel', {
      */
     appendDataRow(data, appendTo) {
         const row = document.createElement('tr');
-
-		if(data.name=="Hilden, Herder Str. 44"){
-			data.name="FT Wysocki";
-		}
-		if(data.name.startsWith('JET')){
-			data.name="Jet";
-		}
-		if(data.name.startsWith('TOTAL')){
-			data.name="Total";
-		}
-		if(data.name.startsWith('star')){
-			data.name="Star";
-		}
-		if(data.name.startsWith('Aral')){
-			data.name="Aral";
-		}
-		if(data.name.startsWith('Esso')){
-			data.name="Esso";
-		}
-		if(data.name=="HILDEN, HOCHDAHLER STR"){
-			data.name="Shell";
-		}
-		if(data.name=="HILDEN, WALDER STR."){
-			data.name="Shell";
-		}
-		if(data.name=="ERKRATH, MAX-PLANCK-STR. 81"){
-			data.name="Shell";
-		}
-		if(data.name=="HAAN, GINSTERWEG"){
-			data.name="Shell";
-		}		
-		
         const name = document.createElement('td');
-        name.innerHTML = this.shortenText(data.name);
+		let name_tmp = this.replaceName(data.name);
+        name.innerHTML = this.shortenName(name_tmp);
         row.appendChild(name);
 
         for (let i = 0; i < this.config.types.length; i += 1) {
@@ -451,20 +500,24 @@ Module.register('MMM-Fuel', {
                 row.appendChild(price);
             }
         }
+		
+		if(this.config.showDistance)
+		{
+			const distanceUnit = this.units[config.units];
+			let distance = data.distance;
 
-        const distanceUnit = this.units[config.units];
-        let distance = data.distance;
+			if (distanceUnit !== this.priceList.unit) {
+				distance = this[`${this.priceList.unit}2${distanceUnit}`](distance);
+			}
 
-        if (distanceUnit !== this.priceList.unit) {
-            distance = this[`${this.priceList.unit}2${distanceUnit}`](distance);
-        }
+			const distanceColumn = document.createElement('td');
+			distanceColumn.classList.add('centered');
+			distanceColumn.innerHTML = `${distance.toFixed(2)} ${distanceUnit}`;
+			row.appendChild(distanceColumn);
+		}
 
-        const distanceColumn = document.createElement('td');
-        distanceColumn.classList.add('centered');
-        distanceColumn.innerHTML = `${distance.toFixed(2)} ${distanceUnit}`;
-        row.appendChild(distanceColumn);
-
-        if (this.config.open) {
+        if (this.config.open)
+		{
             const lockUnlockIconLabel = document.createElement('td');
             lockUnlockIconLabel.classList.add('centered');
             const lockUnlockIcon = document.createElement('i');
@@ -479,15 +532,28 @@ Module.register('MMM-Fuel', {
 
         appendTo.appendChild(row);
 
-        if (this.config.showAddress) {
-            const details = document.createElement('tr');
-            details.setAttribute('colspan', 2 + this.config.types.length + (this.config.open ? 1 : 0));
-
-            const address = document.createElement('td');
+        if (this.config.showAddress)
+		{						
+			var details = document.createElement("tr");
+            details.setAttribute("colspan", 2 + this.config.types.length + (this.config.open ? 1 : 0));
+            var city_string = data.place.charAt(0).toUpperCase() + data.place.toLowerCase().slice(1);
+            var street_string = this.capitalizeWords(data.street);
+			var streetno_string = "";
+			if(data.houseNumber!=null)
+			{
+				streetno_string = data.houseNumber;
+			}
+			else
+			{
+				streetno_string = "";	
+			}
+			
+            var address_string = ("0" + data.postCode).slice(-5) + " " + city_string + " - " + street_string + " " + streetno_string;
+			address_string = this.replaceAddress(address_string);
+			const address = document.createElement('td');
             address.classList.add('xsmall');
-            address.innerHTML = this.shortenText(data.address);
+            address.innerHTML = this.shortenAddress(address_string);
             details.appendChild(address);
-
             appendTo.appendChild(details);
         }
     },
@@ -573,6 +639,27 @@ Module.register('MMM-Fuel', {
         return text.charAt(0).toUpperCase() + text.slice(1);
     },
 
+    /**
+     * @function capitalizeWords
+     * @description Capitalizes the first letter of each word in a string.
+     *
+     * @param {string} text - text to capitalize the first letter of each word.
+     *
+     * @returns {string} Capitalized words in a string.
+     */
+	capitalizeWords(text)
+	{
+		words = text.toLowerCase().split(/-| /);
+		for(var i = 0; i < words.length; i++)
+		{
+ 			var letters = words[i].split('');
+			letters[0] = letters[0].toUpperCase();
+			words[i] = letters.join(''); 
+		}
+		text = words.join(' ');
+		return text;
+	},
+	
     /**
      * @function km2ml
      * @description Converts the unit kilometres to miles.
