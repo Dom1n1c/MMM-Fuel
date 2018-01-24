@@ -30,6 +30,30 @@ Gas Station Price Module for MagicMirror<sup>2</sup>
             lng: 13.408333,
             types: ["diesel"],
             ...
+			replaceName:
+			{
+				enable: true,
+				beginsWith:
+				{
+					"JET":						"Jet",
+					"TOTAL":					"Total",
+					"star":						"Star",
+					"Aral":						"Aral",
+					"Esso":						"Esso",
+					//Local stations
+					"HILDEN, ":					"Shell",
+					"ERKRATH, ":				"Shell"
+				}
+			},
+			replaceAddress:
+			{
+				enable: true,
+				values:
+				{
+					"Straße":		"Str.",
+					"Duesseldorf":	"Düsseldorf"
+				}
+			}
         }
     }
     ```
