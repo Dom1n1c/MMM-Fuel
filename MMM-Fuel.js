@@ -93,13 +93,11 @@ Module.register('MMM-Fuel', {
 		showDistance : true,
 		shortenName: false,
 		shortenAddress: false,
-		replaceName:
+		replaceStationnames:
 		{
-			enable:false
 		},
-		replaceAddress:
+		replaceAddresses:
 		{
-			enable:false
 		}
     },
 
@@ -405,27 +403,24 @@ Module.register('MMM-Fuel', {
     },
 
     /**
-     * @function replaceName
-     * @description Replace station name based on config option (replaceName).
+     * @function replaceStation
+     * @description Replace station name based on config option (replaceStationnames).
      *
      * @param {string} text - Text which should searched for.
      *
      * @returns {string} The new station name.
      */
-    replaceName(text)
+    replaceStation(text)
 	{
         let temp = text;
-        if (this.config.replaceName.enable)
-		{
-			//for (let i = 0; i < this.config.replaceName.values.length; i += 1)
-			for (let [key, value] of Object.entries(this.config.replaceName.beginsWith))
+			//for (let i = 0; i < this.config.replaceStationnames.values.length; i += 1)
+			for (let [key, value] of Object.entries(this.config.replaceStationnames))
 			{
 				if (temp.startsWith(key))
 				{
 					temp = value;
 				}
 			}
-        }
         return temp;
     },
 
@@ -440,15 +435,12 @@ Module.register('MMM-Fuel', {
     replaceAddress(text)
 	{
         let temp = text;
-        if (this.config.replaceAddress.enable)
-		{
-			//for (let i = 0; i < this.config.replaceAddress.values.length; i += 1)
-			for (let [key, value] of Object.entries(this.config.replaceAddress.values))
+			//for (let i = 0; i < this.config.replaceAddresses.values.length; i += 1)
+			for (let [key, value] of Object.entries(this.config.replaceAddresses))
 			{
-				//temp = temp.replaceAll(this.config.replaceAddress.values[i].contains, this.config.replaceAddress.values[i].replace);
+				//temp = temp.replaceAll(this.config.replaceAddresses.values[i].contains, this.config.replaceAddresses.values[i].replace);
 				temp = temp.replace(key,value);
 			}
-        }
         return temp;
     },
 	
@@ -482,7 +474,7 @@ Module.register('MMM-Fuel', {
     appendDataRow(data, appendTo) {
         const row = document.createElement('tr');
         const name = document.createElement('td');
-		let name_tmp = this.replaceName(data.name);
+		let name_tmp = this.replaceStation(data.name);
         name.innerHTML = this.shortenName(name_tmp);
         row.appendChild(name);
 
