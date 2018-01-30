@@ -32,27 +32,19 @@ Gas Station Price Module for MagicMirror<sup>2</sup>
             ...
 			replaceName:
 			{
-				enable: true,
-				beginsWith:
-				{
-					"JET":						"Jet",
-					"TOTAL":					"Total",
-					"star":						"Star",
-					"Aral":						"Aral",
-					"Esso":						"Esso",
-					//Local stations
-					"HILDEN, ":					"Shell",
-					"ERKRATH, ":				"Shell"
-				}
+				"JET":				"Jet",
+				"TOTAL":			"Total",
+				"star":				"Star",
+				"Aral":				"Aral",
+				"Esso":				"Esso",
+				//Local stations
+				"HILDEN, ":			"Shell",
+				"ERKRATH, ":		"Shell"
 			},
 			replaceAddress:
 			{
-				enable: true,
-				values:
-				{
-					"Straße":		"Str.",
-					"Duesseldorf":	"Düsseldorf"
-				}
+				"Straße":			"Str.",
+				"Duesseldorf":		"Düsseldorf"
 			}
         }
     }
